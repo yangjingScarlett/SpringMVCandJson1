@@ -2,9 +2,13 @@ package com.mkyong.common.controller;
 
 import com.mkyong.common.model.Shop;
 import com.mkyong.common.model.User;
+import java.io.ByteArrayOutputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.Base64;
 import java.util.Map;
+import java.util.zip.GZIPOutputStream;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -43,9 +47,52 @@ public class JSONController {
   @RequestMapping(value = "/awResponse/{requestId}", method = RequestMethod.POST, consumes = "application/json")
   @ResponseBody
   public String awbatResponse(@RequestBody Map<String, String> map) {
-    if (map.get("sweepStatus").equals("F")) {
-      return "fail";
+    if (map.containsKey("sweepStatus") && map.get("sweepStatus").equals("S")) {
+      String awFileContents = map.get("awFileContents");
+      byte[] bytes = Base64.getDecoder().decode(awFileContents);
+      writeBytesToFiles(bytes, "/home/jingyang/gePrograms/glassfish5/rsweep/awbat/awbat.tar.gz");
+      return "success";
     }
-    return "success";
+    System.out.println(map.get("sweepMessage"));
+    return "fail";
+  }
+
+  /**
+   * Write byte array of gzip file to writeFilePath
+   *
+   * @param bytes         byte array of a gzip file
+   * @param writeFilePath file path to write byte array
+   */
+
+  public void writeBytesToFiles(byte[] bytes, String writeFilePath) {
+    GZIPOutputStream gzipOutputStream = null;
+    FileOutputStream fileOutputStream = null;
+    ByteArrayOutputStream byteArrayOutputStream = null;
+    try {
+      byteArrayOutputStream = new ByteArrayOutputStream(bytes.length);
+      gzipOutputStream = new GZIPOutputStream(byteArrayOutputStream);
+      gzipOutputStream.write(bytes);
+      fileOutputStream = new FileOutputStream(writeFilePath);
+      fileOutputStream.write(byteArrayOutputStream.toByteArray());
+    } catch (IOException e) {
+      System.out.println(e);
+      ;
+    } finally {
+      try {
+        if (gzipOutputStream != null) {
+          gzipOutputStream.close();
+        }
+        if (byteArrayOutputStream != null) {
+          byteArrayOutputStream.close();
+        }
+        if (fileOutputStream != null) {
+          fileOutputStream.close();
+        }
+      } catch (IOException e) {
+        System.out.println(e);
+        ;
+      }
+    }
+
   }
 }
