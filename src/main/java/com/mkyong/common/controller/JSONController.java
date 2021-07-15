@@ -34,8 +34,7 @@ public class JSONController {
   @RequestMapping("/user")
   @ResponseBody
   User getUserInJSON() {
-    User user = new User("huahua", "male");
-    return user;
+    return new User("huahua", "male");
   }
 
   @RequestMapping(value = "/user", method = RequestMethod.POST)
@@ -44,7 +43,8 @@ public class JSONController {
     return new User(name, sex);
   }
 
-  @RequestMapping(value = "/awResponse/{requestId}", method = RequestMethod.POST, consumes = "application/json")
+  // This API is used when client request with JSON object string. and the file is parsed as byte[], then encode to string
+  @RequestMapping(value = "/awResponseJson/{requestId}", method = RequestMethod.POST, consumes = "application/json")
   @ResponseBody
   public String awbatResponse(@RequestBody Map<String, String> map) {
     if (map.containsKey("sweepStatus") && map.get("sweepStatus").equals("S")) {
@@ -75,8 +75,7 @@ public class JSONController {
       fileOutputStream = new FileOutputStream(writeFilePath);
       fileOutputStream.write(byteArrayOutputStream.toByteArray());
     } catch (IOException e) {
-      System.out.println(e);
-      ;
+      System.out.println(e.getMessage());
     } finally {
       try {
         if (gzipOutputStream != null) {
@@ -89,7 +88,7 @@ public class JSONController {
           fileOutputStream.close();
         }
       } catch (IOException e) {
-        System.out.println(e);
+        System.out.println(e.getMessage());
         ;
       }
     }
