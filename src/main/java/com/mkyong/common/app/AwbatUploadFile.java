@@ -1,21 +1,10 @@
 package com.mkyong.common.app;
 
 import com.mkyong.common.util.HttpsConfigUtil;
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.util.Objects;
-import java.util.UUID;
-import javax.net.ssl.HttpsURLConnection;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -24,9 +13,8 @@ import org.apache.http.entity.ContentType;
 import org.apache.http.entity.mime.HttpMultipartMode;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.springframework.http.MediaType;
 
-public class UploadFileUsingHttpMimeClient {
+public class AwbatUploadFile {
 
   public static void sendFile(String callback, String zipFilePath, String imageFileName) {
     try {
@@ -62,7 +50,7 @@ public class UploadFileUsingHttpMimeClient {
     httpsConfig.addFormField("sweepStatus", "S");
     httpsConfig.addFormField("sweepMessage", "Successful");
     // Add file
-    httpsConfig.addFilePart("file", new File(zipFilePath));
+    httpsConfig.addFilePart("awFile", new File(zipFilePath));
     // Print result
     String response = httpsConfig.finish();
     System.out.println(response);
@@ -83,7 +71,7 @@ public class UploadFileUsingHttpMimeClient {
       imagePath = linuxImage;
     }
     String httpUrl = "http://localhost:8080/file/upload/";
-    String httpsUrl = "https://localhost:8181/file/upload/";
+    String httpsUrl = "https://localhost:8181/awbat/awResponse/testRequestId";
     String url = httpsUrl;
     if (url.contains("http://")) {
       sendFile(url, path, imagePath);
@@ -91,5 +79,6 @@ public class UploadFileUsingHttpMimeClient {
       sendFileHttps(url, path, imagePath);
     }
   }
+
 
 }

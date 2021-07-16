@@ -4,8 +4,11 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.Part;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -22,12 +25,20 @@ public class FileController {
     return "Hello world!";
   }
 
-  @RequestMapping(value = "/upload", method = RequestMethod.POST)
+  @RequestMapping(value = "/upload", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   String uploadFileBufferToLocal(@RequestParam("file") CommonsMultipartFile file,
       HttpServletRequest request, HttpServletResponse response) {
 
+    String sweepStatus = request.getParameter("sweepStatus");
+    String sweepMessage = request.getParameter(("sweepMessage"));
+
+    String file_PATH = "/home/jingyang/upload/temp";
+    if (System.getProperty("os.name").startsWith("Windows")) {
+      file_PATH = "C:/upload/temp/";
+    }
+
     //将文件缓冲到本地
-    String file_PATH = "C:/upload/temp";
+
     boolean localFile = createLocalFile(file_PATH, file);
     if (!localFile) {
       System.out.println("Create local file failed!");

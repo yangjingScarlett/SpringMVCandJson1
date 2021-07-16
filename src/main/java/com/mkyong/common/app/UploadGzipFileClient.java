@@ -1,5 +1,6 @@
 package com.mkyong.common.app;
 
+import com.mkyong.common.util.HttpsConfigUtil;
 import com.mkyong.common.util.JacksonUtil;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
@@ -47,7 +48,7 @@ public class UploadGzipFileClient {
       connection.setRequestMethod("POST");
       connection.setRequestProperty("Content-Type", "application/json; utf-8");
 
-      connection = configureConnection(connection);
+      connection = HttpsConfigUtil.configureConnection(connection);
       // Ensure the Connection Will Be Used to Send Content
       connection.setDoOutput(true);
       try (DataOutputStream writer = new DataOutputStream(connection.getOutputStream())) {
@@ -142,38 +143,6 @@ public class UploadGzipFileClient {
     return byteOutput.toByteArray();
   }
 
-  public static HttpsURLConnection configureConnection(HttpsURLConnection con) {
-    TrustManager[] trustAllCerts = new TrustManager[]{new X509TrustManager() {
 
-      public java.security.cert.X509Certificate[] getAcceptedIssuers() {
-        return null;
-      }
-
-      public void checkClientTrusted(
-          java.security.cert.X509Certificate[] certs, String authType) {
-      }
-
-      public void checkServerTrusted(
-          java.security.cert.X509Certificate[] certs, String authType) {
-      }
-    }};
-
-    HostnameVerifier allHostsValid = new HostnameVerifier() {
-      @Override
-      public boolean verify(String arg0, SSLSession arg1) {
-        return true;
-      }
-    };
-
-    // Install the all-trusting trust manager
-    try {
-      SSLContext sc = SSLContext.getInstance("TLSv1.2");
-      sc.init(null, trustAllCerts, new java.security.SecureRandom());
-      con.setHostnameVerifier(allHostsValid);
-      con.setSSLSocketFactory(sc.getSocketFactory());
-    } catch (Exception ignored) {
-    }
-    return con;
-  }
 
 }
